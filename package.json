@@ -19,7 +19,8 @@
     "jose": "^6.2.12",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.6.0",
-    "resend": "^6.29.0"
+    "resend": "^6.29.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
