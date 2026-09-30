@@ -64,12 +64,15 @@ export const login = async (req: Request, res: Response) => {
 // Logout
 export const logout = async (req: Request, res: Response) => {
   try {
-    // Karena menggunakan JWT via response body, klien yang bertanggung jawab untuk menghapus token
+    // Delete Token Cookie
+    res.clearCookie("token");
+    
+    // Response Logout Success
     res.json({
       success: true,
-      message:
-        "Logout berhasil, silakan hapus token dari sisi klien (misal: localStorage)",
+      message: "Logout berhasil",
     });
+    
   } catch (error) {
     res.status(500).json({ message: "Terjadi kesalahan server saat logout" });
   }
