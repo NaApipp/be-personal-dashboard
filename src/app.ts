@@ -10,7 +10,12 @@ import scheduleRoutes from "./routes/scheduleRoutes";
 const app = express();
 app.use(
   cors({
-    origin: ["http://localhost:3002", "https://api.appsporto.my.id/"],
+    origin: [
+      "http://localhost:3002",
+      "http://localhost:3000",
+      "https://appsporto.my.id",
+      "https://api.appsporto.my.id/",
+    ],
     credentials: true,
   }),
 );
