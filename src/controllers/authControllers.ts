@@ -22,7 +22,7 @@ export const login = async (req: Request, res: Response) => {
     if (!name || !password) {
       return res
         .status(400)  
-        .json({ message: "name dan password wajib diisi" });
+        .json({ message: "Name dan password wajib diisi" });
     }
 
     // Find user by name
@@ -40,6 +40,14 @@ export const login = async (req: Request, res: Response) => {
 
     // Generate Token 
     const token = generateToken({ id_user: user.id_user, name: user.name });
+
+    // Set cookies
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
 
     // Response Login Success
     res.json({
