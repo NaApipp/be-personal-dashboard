@@ -36,11 +36,7 @@ export const addSchedule = async (req: Request, res: Response) => {
             location,
             priority,
             isRecurring,
-            recurance,
-            createdAt,
-            updatedAt,
-            completedAt
-            
+            recurrence,
         } = body;
 
         const db =  await clientPromise;
@@ -60,7 +56,7 @@ export const addSchedule = async (req: Request, res: Response) => {
             location,
             priority,
             isRecurring,
-            recurance,
+            recurrence,
             createdAt: formatDateWIB(new Date()),
             updatedAt: formatDateWIB(new Date()),
         };
