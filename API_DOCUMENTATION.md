@@ -9,7 +9,7 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
 - **Base URL (Local):** `http://localhost:3000` (atau port yang dikonfigurasi pada environment)
 - **Base URL (Production):** `https://api.appsporto.my.id`
 - **Format Data:** JSON (`Content-Type: application/json`)
-- **Autentikasi:** HTTP-Only Cookie (`token`) atau Header `Authorization: Bearer <token>`
+- **Autentikasi:** HTTP-Only Cookie (`token`)
 - **Database:** MongoDB (Collections: `messages`, `task`, `schedules`)
 
 ---
@@ -44,7 +44,7 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       "token": "eyJhbGciOiJIUzI1NiIsIn..."
     }
     ```
-    *Catatan: Set-Cookie `token=<jwt_token>` dikirimkan dalam header HTTP response.*
+    *Catatan: Set-Cookie `token=<jwt_token>` dikirimkan dalam header HTTP response dengan opsi `httpOnly: true`, `secure: true` (production), `sameSite: "lax"`, `path: "/"`, `maxAge: 3600000` (1 jam).*
   - **400 Bad Request (Field kosong):**
     ```json
     {
@@ -82,6 +82,37 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
     ```json
     {
       "message": "Terjadi kesalahan server saat logout"
+    }
+    ```
+
+---
+
+### 1.3. Get Current User Profile ⭐ *(Endpoint Baru)*
+- **Endpoint:** `GET /api/auth/me`
+- **Deskripsi:** Mengambil data profil user yang sedang login berdasarkan JWT token dari cookie. Endpoint ini dilindungi oleh `authMiddleware`.
+- **Autentikasi:** Wajib. Cookie `token` harus ada dan valid.
+- **Request Headers / Cookie:**
+  - Cookie: `token=<jwt_token>`
+- **Responses:**
+  - **200 OK (Berhasil):**
+    ```json
+    {
+      "user": {
+        "id_user": 1,
+        "name": "n_apipppp"
+      }
+    }
+    ```
+  - **401 Unauthorized (Token Tidak Ditemukan):**
+    ```json
+    {
+      "message": "Token tidak ditemukan"
+    }
+    ```
+  - **401 Unauthorized (Token Tidak Valid / Kadaluarsa):**
+    ```json
+    {
+      "message": "Token tidak valid atau kadaluarsa"
     }
     ```
 
@@ -155,13 +186,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       ]
     }
     ```
-  - **401 Unauthorized (Token Tidak Ditemukan / Tidak Valid):**
+  - **401 Unauthorized (Token Tidak Ditemukan):**
     ```json
     {
       "message": "Unauthorized: token tidak ditemukan"
     }
     ```
-    atau
+  - **401 Unauthorized (Token Tidak Valid):**
     ```json
     {
       "message": "Unauthorized: token tidak valid"
@@ -189,7 +220,7 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
 | `description` | String | Min. 10 karakter |
 | `status` | Enum | `"pending" \| "in_progress" \| "completed"` |
 | `priority` | Enum | `"high" \| "medium" \| "low"` |
-| `deadline` | Array / String | Diinput sebagai string min. 10 karakter |
+| `deadline` | String (Zod) / Array (Controller) | Divalidasi Zod sebagai `string` min. 10 karakter; dikirim ke API dan disimpan ke DB sebagai array `["YYYY-MM-DD", "HH:MM"]` |
 | `location` | String | Min. 5 karakter |
 | `checklist` | Array of Object | Object: `{ "title_checklist": string, "isCompleted": boolean }` |
 | `references` | Array of Object | Object: `{ "title_references": string, "url": URL valid }` |
@@ -265,6 +296,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       ]
     }
     ```
+  - **500 Internal Server Error:**
+    ```json
+    {
+      "message": "Terjadi kesalahan server",
+      "error": {}
+    }
+    ```
 
 ---
 
@@ -294,6 +332,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       ]
     }
     ```
+  - **500 Internal Server Error:**
+    ```json
+    {
+      "message": "Terjadi kesalahan server",
+      "error": {}
+    }
+    ```
 
 ---
 
@@ -317,6 +362,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
     {
       "success": false,
       "message": "Asignment tidak ditemukan"
+    }
+    ```
+  - **500 Internal Server Error:**
+    ```json
+    {
+      "message": "Terjadi kesalahan server",
+      "error": {}
     }
     ```
 
@@ -348,6 +400,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       "message": "Asignment tidak ditemukan"
     }
     ```
+  - **500 Internal Server Error:**
+    ```json
+    {
+      "message": "Terjadi kesalahan server",
+      "error": {}
+    }
+    ```
 
 ---
 
@@ -370,6 +429,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
     {
       "success": false,
       "message": "Asignment tidak ditemukan"
+    }
+    ```
+  - **500 Internal Server Error:**
+    ```json
+    {
+      "message": "Terjadi kesalahan server",
+      "error": {}
     }
     ```
 
@@ -441,6 +507,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       ]
     }
     ```
+  - **500 Internal Server Error:**
+    ```json
+    {
+      "message": "Terjadi kesalahan server",
+      "error": {}
+    }
+    ```
 
 ---
 
@@ -469,6 +542,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       ]
     }
     ```
+  - **500 Internal Server Error:**
+    ```json
+    {
+      "message": "Terjadi kesalahan server",
+      "error": {}
+    }
+    ```
 
 ---
 
@@ -493,6 +573,13 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       "message": "Schedule tidak ditemukan"
     }
     ```
+  - **500 Internal Server Error:**
+    ```json
+    {
+      "message": "Terjadi kesalahan server",
+      "error": {}
+    }
+    ```
 
 ---
 
@@ -507,3 +594,32 @@ Dokumentasi lengkap dan detail untuk seluruh endpoint API yang tersedia pada pro
       "message": "Server API Porto berhasil jalan!"
     }
     ```
+
+---
+
+## 🔒 6. Middleware & Autentikasi
+
+### `authMiddleware` (digunakan di `GET /api/auth/me`)
+Memverifikasi JWT token dari cookie `token`. Jika valid, payload (`id_user`, `name`) di-inject ke `req.user`.
+
+| Kondisi | Status | Pesan |
+| :--- | :--- | :--- |
+| Cookie `token` tidak ada | `401` | `"Token tidak ditemukan"` |
+| Token tidak valid / kadaluarsa | `401` | `"Token tidak valid atau kadaluarsa"` |
+
+### Cookie Auth Manual (digunakan di `GET /api/message`)
+Verifikasi token dilakukan secara manual di dalam controller dengan memanggil `verifyToken(req.cookies?.token)`, tanpa menggunakan `authMiddleware`.
+
+| Kondisi | Status | Pesan |
+| :--- | :--- | :--- |
+| Cookie `token` tidak ada | `401` | `"Unauthorized: token tidak ditemukan"` |
+| Token tidak valid | `401` | `"Unauthorized: token tidak valid"` |
+
+### Cookie Options (Set saat Login)
+| Property | Value |
+| :--- | :--- |
+| `httpOnly` | `true` |
+| `secure` | `true` (hanya di production) |
+| `sameSite` | `"lax"` |
+| `path` | `"/"` |
+| `maxAge` | `3600000` ms (1 jam) |
