@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "../types/user";
 import { generateToken } from "../utils/jwt";
+import { COOKIE_NAME, TOKEN_TTL_MS, cookieOptions } from "../utils/cookie";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 // sementara pakai array, ganti dengan database nanti
 let users: User[] = [
@@ -20,9 +22,7 @@ export const login = async (req: Request, res: Response) => {
     const { name, password } = req.body;
 
     if (!name || !password) {
-      return res
-        .status(400)  
-        .json({ message: "Name dan password wajib diisi" });
+      return res.status(400).json({ message: "Name dan password wajib diisi" });
     }
 
     // Find user by name
@@ -38,7 +38,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: "name atau password salah" });
     }
 
-    // Generate Token 
+    // Generate Token
     const token = generateToken({ id_user: user.id_user, name: user.name });
 
     // Set cookies
@@ -50,12 +50,14 @@ export const login = async (req: Request, res: Response) => {
     });
 
     // Response Login Success
-    res.json({
-      success: true,
-      message: "Login berhasil",
-      user: { id_user: user.id_user, name: user.name }, 
-      token,
-    });
+    res
+      .cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: TOKEN_TTL_MS })
+      .json({
+        success: true,
+        message: "Login berhasil",
+        user: { id_user: user.id_user, name: user.name },
+        token,
+      });
   } catch (error) {
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
@@ -64,21 +66,16 @@ export const login = async (req: Request, res: Response) => {
 // Logout
 export const logout = async (req: Request, res: Response) => {
   try {
-    // Delete Token Cookie
-    res.clearCookie("token");
-    
-    // Response Logout Success
-    res.json({
+    res.clearCookie(COOKIE_NAME, cookieOptions).json({
       success: true,
       message: "Logout berhasil",
     });
-    
   } catch (error) {
     res.status(500).json({ message: "Terjadi kesalahan server saat logout" });
   }
 };
 
 // GET PROFILE (protected route contoh)
-export const getProfile = (req: Request, res: Response) => {
-  res.json({ user: (req as any).user });
+export const me = (req: Request, res: Response) => {
+  res.json({ user: req.user });
 };
