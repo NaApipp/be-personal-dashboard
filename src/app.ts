@@ -12,7 +12,19 @@ import { allowedOrigins } from "./utils/origin";
 const app = express();
 
 app.set("trust proxy", 1);
-app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin) || /^https?:\/\/(localhost|127\.0\.0\.1)(?::\d+)?$/.test(origin)) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser()); // sebelum route dan requireAuth
 app.use(originCheck);
@@ -23,6 +35,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api", messageRoutes);
+app.use(messageRoutes);
 app.use("/api/asignment", asignmentRoutes);
 app.use("/api/schedule", scheduleRoutes);
 
