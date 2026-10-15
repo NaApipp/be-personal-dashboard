@@ -14,8 +14,7 @@ export const addAsignmentSchema = z.object({
       message: "Priority is required",
     }),
     deadline: z
-      .string()
-      .min(10, "Deadline must be at least 10 characters long"),
+      .string(),
     location: z.string().min(5, "Location must be at least 5 characters long"),
     checklist: z.array(
       z.object({
