@@ -30,6 +30,7 @@ export const addAsignment = async (req: Request, res: Response) => {
       description,
       status,
       priority,
+      subject,
       deadline: [date, time],
       location,
       checklist: [{ title_checklist, isCompleted }],
@@ -52,6 +53,7 @@ export const addAsignment = async (req: Request, res: Response) => {
       description,
       status,
       priority,
+      subject, // mata kuliah
       deadline: [date, time],
       location,
       checklist: [{ id_checklist, title_checklist, isCompleted }],
