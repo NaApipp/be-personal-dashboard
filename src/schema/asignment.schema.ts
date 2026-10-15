@@ -13,8 +13,10 @@ export const addAsignmentSchema = z.object({
     priority: z.enum(["high", "medium", "low"], {
       message: "Priority is required",
     }),
-    deadline: z
-      .string(),
+    deadline: z.tuple([
+      z.string().min(1, "Date is required"),
+      z.string().min(1, "Time is required"),
+    ]),
     location: z.string().min(5, "Location must be at least 5 characters long"),
     checklist: z.array(
       z.object({
