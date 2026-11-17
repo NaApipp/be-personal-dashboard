@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { Resend } from "resend";
 import clientPromise from "../lib/mongodb";
-import { verifyToken } from "../utils/jwt";
 
 // GET Api Key Resend Service Email
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -83,17 +82,8 @@ export const addMessage = async (req: Request, res: Response) => {
 
 export const getMessage = async (req: Request, res: Response) => {
   try {
-    // Ambil token dari cookie (di-set saat login)
-    const token = req.cookies?.token;
-    if (!token) {
-      return res.status(401).json({ message: "Unauthorized: token tidak ditemukan" });
-    }
-
-    // Verifikasi token
-    const payload = verifyToken(token);
-    if (!payload) {
-      return res.status(401).json({ message: "Unauthorized: token tidak valid" });
-    }
+    // Token sudah diverifikasi oleh authMiddleware
+    // req.user sudah tersedia
     const db = await clientPromise;
     const dbName = process.env.DB_NAME;
     const messageCollection = db.db(dbName).collection("messages");
@@ -106,4 +96,3 @@ export const getMessage = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Terjadi kesalahan server", error });
   }
 };
-

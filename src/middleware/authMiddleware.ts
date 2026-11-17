@@ -1,13 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt";
-import { COOKIE_NAME } from "../utils/cookie";
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.cookies?.[COOKIE_NAME];
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ message: "Token tidak ditemukan" });
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Token tidak ditemukan. Gunakan header: Authorization: Bearer <token>" });
   }
+
+  const token = authHeader.split(" ")[1];
 
   try {
     const decoded = verifyToken(token);

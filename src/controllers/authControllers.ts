@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { User } from "../types/user";
 import { generateToken } from "../utils/jwt";
-import { COOKIE_NAME, TOKEN_TTL_MS, cookieOptions } from "../utils/cookie";
-import { authMiddleware } from "../middleware/authMiddleware";
 
 // sementara pakai array, ganti dengan database nanti
 let users: User[] = [
@@ -26,7 +24,6 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Find user by name
-    // Cek User
     const user = users.find((u) => u.name === name);
     if (!user) {
       return res.status(401).json({ message: "name atau password salah" });
@@ -41,41 +38,31 @@ export const login = async (req: Request, res: Response) => {
     // Generate Token
     const token = generateToken({ id_user: user.id_user, name: user.name });
 
-    // Set cookies
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
+    // Response Login Success - return Bearer token
+    res.json({
+      success: true,
+      message: "Login berhasil",
+      user: { id_user: user.id_user, name: user.name },
+      token,
     });
-
-    // Response Login Success
-    res
-      .cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: TOKEN_TTL_MS })
-      .json({
-        success: true,
-        message: "Login berhasil",
-        user: { id_user: user.id_user, name: user.name },
-        token,
-      });
   } catch (error) {
     res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 };
 
-// Logout
+// Logout (client-side: hapus token dari storage)
 export const logout = async (req: Request, res: Response) => {
   try {
-    res.clearCookie(COOKIE_NAME, cookieOptions).json({
+    res.json({
       success: true,
-      message: "Logout berhasil",
+      message: "Logout berhasil. Silakan hapus token dari client.",
     });
   } catch (error) {
     res.status(500).json({ message: "Terjadi kesalahan server saat logout" });
   }
 };
 
-// GET PROFILE (protected route contoh)
+// GET PROFILE (protected route)
 export const me = (req: Request, res: Response) => {
   res.json({ user: req.user });
 };

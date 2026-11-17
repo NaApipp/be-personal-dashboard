@@ -1,7 +1,6 @@
 // src/app.ts
 import express, { Request, Response } from "express";
 import cors from "cors";
-import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes";
 import messageRoutes from "./routes/messageRoutes";
 import asignmentRoutes from "./routes/asignmentRoutes";
@@ -26,7 +25,6 @@ app.use(
   })
 );
 app.use(express.json());
-app.use(cookieParser()); // sebelum route dan requireAuth
 app.use(originCheck);
 
 app.get("/", (req: Request, res: Response) => {

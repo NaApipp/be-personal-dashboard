@@ -12,8 +12,12 @@ import {
   addAsignmentSchema,
   updateAsignmentSchema,
 } from "../schema/asignment.schema";
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const router = Router();
+
+// Semua route assignment dilindungi authMiddleware (Bearer Token)
+router.use(authMiddleware);
 
 // asignment routes
 router.post("/", validate(addAsignmentSchema), addAsignment);
